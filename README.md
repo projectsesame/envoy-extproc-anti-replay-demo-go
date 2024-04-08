@@ -46,16 +46,16 @@ To get started with the demo application, follow these steps:
      ```
 
      Field Description:
-       1. sign:  MD5(k1=v1&k2=v2&...kN=vN) # order by key's ascending alphabetical, **skip the zero value**.
+       1. **sign**:  MD5(k1=v1&k2=v2&...kN=vN), the key-valure pairs order by key's ascending alphabetical. (**ignore the zero value pair**).
 
           eg:
 
           ```shell
           sign= MD5("key=value&nonce=6062&timestamp=1712480920") = 659876b30987883efdf178e69f062896
           ```
-       2. nonce: the uuid that can only be used once within a timespan.
+       2. **nonce**: the uuid that can only be used once within a timespan.
 
-       3. timestamp: the current timestamp.
+       3. **timestamp**: the current timestamp.
 
      PS:
        1. The use of the md5 here is only as a demo, in product,please use the signature algorithm likes **SHA256WithRSA**.
