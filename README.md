@@ -1,6 +1,6 @@
-# envoy-extproc-payloadlimit-demo-go
+# envoy-extproc-anti-replay-demo-go
 
-This repository contains a demo applicationw written in Go that demonstrates the usage of Envoy's External Processor (ExtProc) filter to do `payload limit` for POST request.
+This repository contains a demo application written in Go that demonstrates the usage of Envoy's External Processor (ExtProc) filter to do `anti-replay` for HTTP request.
 
 ## Overview
 
@@ -19,7 +19,7 @@ To get started with the demo application, follow these steps:
 
   1. Clone the repository:
      ```
-     git clone https://github.com/projectsesame/envoy-extproc-payloadlimit-demo-go.git
+     git clone https://github.com/projectsesame/envoy-extproc-anti-replay-demo-go.git
      ```
 
   2. Build the Go application:
@@ -29,9 +29,36 @@ To get started with the demo application, follow these steps:
 
   3. Run the application:
      ```
-     ./envoy-extproc-payloadlimit-demo-go payload-limit --log-stream --log-phases payload-limit 32
+     ./envoy-extproc-anti-replay-demo-go anti-replay --log-stream --log-phases timespan 450
+     ```
+  4. Do request:
+     ```shell
+     curl --request POST \
+     --url https://https.projectcontour.io:8443/post \
+     --data '{
+      "key": "value",
+      "key2": "",
+      "sign": "659876b30987883efdf178e69f062896",
+      "nonce": "6062",
+      "timestamp": "1712480920"
+     }'
+
      ```
 
+     Field Description:
+       1. sign:  MD5(k1=v1&k2=v2&...kN=vN) # order by key's ascending alphabetical, **skip the zero value**.
+
+          eg:
+
+          ```shell
+          sign= MD5("key=value&nonce=6062&timestamp=1712480920") = 659876b30987883efdf178e69f062896
+          ```
+       2. nonce: the uuid that can only be used once within a timespan.
+
+       3. timestamp: the current timestamp.
+
+     PS:
+       1. The use of the md5 here is only as a demo, in product,please use the signature algorithm likes **SHA256WithRSA**.
 
 ## Usage
 
