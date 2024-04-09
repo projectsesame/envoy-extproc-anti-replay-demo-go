@@ -64,15 +64,15 @@ func (s *antiReplayRequestProcessor) ProcessRequestBody(ctx *ep.RequestContext, 
 		return cancel(400)
 	}
 
-	// timestamp, _ := strconv.ParseInt(extract(unstructure, kTimeStamp), 10, 64)
-	// now := time.Now().Unix()
-	// if timestamp < now-s.timeSpan || timestamp > now+s.timeSpan {
-	// 	return cancel(403)
-	// }
+	timestamp, _ := strconv.ParseInt(extract(unstructure, kTimeStamp), 10, 64)
+	now := time.Now().Unix()
+	if timestamp < now-s.timeSpan || timestamp > now+s.timeSpan {
+		return cancel(403)
+	}
 
 	nonce := extract(unstructure, kNonce)
 	if s.noncePool.exists(nonce) {
-		// return cancel(403)
+		return cancel(403)
 	}
 	s.noncePool.put(nonce)
 
@@ -120,14 +120,10 @@ func (s *antiReplayRequestProcessor) ProcessRequestTrailers(ctx *ep.RequestConte
 }
 
 func (s *antiReplayRequestProcessor) ProcessResponseHeaders(ctx *ep.RequestContext, headers ep.AllHeaders) error {
-	ctx.OverwriteHeader("Content-Length", ep.HeaderValue{
-		RawValue: []byte("0"),
-	})
 	return ctx.ContinueRequest()
 }
 
 func (s *antiReplayRequestProcessor) ProcessResponseBody(ctx *ep.RequestContext, body []byte) error {
-	ctx.ReplaceBodyChunk(nil)
 	return ctx.ContinueRequest()
 }
 
@@ -203,7 +199,6 @@ func (c *ttlSet) evictExpired() {
 	for {
 		select {
 		case <-c.chEvict:
-			time.Sleep(2e9)
 			return
 
 		case <-ticker.C:

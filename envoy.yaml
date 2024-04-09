@@ -35,14 +35,14 @@ static_resources:
                       "@type": type.googleapis.com/envoy.extensions.filters.http.ext_proc.v3.ExternalProcessor
                       grpc_service:
                         envoy_grpc:
-                          cluster_name: payload-limit
+                          cluster_name: anti-replay
                         timeout: 30s
                       failure_mode_allow: true
                       message_timeout: 0.2s
                       processing_mode:
                         request_header_mode: SEND
                         response_header_mode: SEND
-                        request_body_mode: BUFFERED
+                        request_body_mode: BUFFERED  #must be this option
                         response_body_mode: BUFFERED
                         request_trailer_mode: SKIP
                         response_trailer_mode: SKIP
@@ -70,19 +70,19 @@ static_resources:
                   socket_address:
                     address: upstream
                     port_value: 8000
-  - name: payload-limit
+  - name: anti-replay
     dns_lookup_family: V4_ONLY
     lb_policy: LEAST_REQUEST
     load_assignment:
-      cluster_name: payload-limit
+      cluster_name: anti-replay
       endpoints:
       - lb_endpoints:
         - endpoint:
             address:
               socket_address:
-                address: payload-limit
+                address: anti-replay
                 port_value: 50051
-            hostname: payload-limit
+            hostname: anti-replay
     type: LOGICAL_DNS
     typed_extension_protocol_options:
       envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
