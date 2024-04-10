@@ -19,7 +19,7 @@ spec:
       containers:
         - name: anti-replay-demo-container
           image: >-
-            release.daocloud.io/skoala/envoy-extproc-anti-replay-demo-go@sha256:dcc5ba7aa2790e87b0cd46799363367b54202585794ebfe87248264f111e63d8
+            release.daocloud.io/skoala/envoy-extproc-anti-replay-demo-go:b96525fb68a684922449c07e8b7088f31179aee6
           ports:
             - containerPort: 50051
               protocol: TCP
