@@ -34,7 +34,7 @@ To get started with the demo application, follow these steps:
   4. Do request:
      ```shell
      curl --request POST \
-     --url https://https.projectcontour.io:8443/post \
+     --url http://127.0.0.1:8080/post \
      --data '{
       "key": "value",
       "key2": "",
