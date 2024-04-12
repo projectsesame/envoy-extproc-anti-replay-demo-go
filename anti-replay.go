@@ -67,11 +67,13 @@ func (s *antiReplayRequestProcessor) ProcessRequestBody(ctx *ep.RequestContext, 
 	timestamp, _ := strconv.ParseInt(extract(unstructure, kTimeStamp), 10, 64)
 	now := time.Now().Unix()
 	if timestamp < now-s.timeSpan || timestamp > now+s.timeSpan {
+		log.Printf("the timestamp is expired")
 		return cancel(403)
 	}
 
 	nonce := extract(unstructure, kNonce)
 	if s.noncePool.exists(nonce) {
+		log.Printf("the nonce has been used")
 		return cancel(403)
 	}
 	s.noncePool.put(nonce)
@@ -103,12 +105,12 @@ func (s *antiReplayRequestProcessor) ProcessRequestBody(ctx *ep.RequestContext, 
 	buf.Truncate(buf.Len() - 1)
 
 	raw := buf.Bytes()
-	fmt.Println(string(raw))
 
 	hash := md5.Sum(raw)
 
 	md5Hex := hex.EncodeToString(hash[:])
 	if sign != md5Hex {
+		log.Printf("verify the sign is failed. raw: %s, want: %x actual: %s", string(raw), md5Hex, sign)
 		return cancel(403)
 	}
 
