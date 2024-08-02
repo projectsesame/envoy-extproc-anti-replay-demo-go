@@ -25,4 +25,4 @@ ARG EXAMPLE=anti-replay
 EXPOSE 50051
 
 ENTRYPOINT [ "/bin/extproc" ]
-CMD [ "anti-replay", "--log-stream", "--log-phases", "timespan", "60"  ]
+#CMD [ "anti-replay", "--log-stream", "--log-phases", "timespan", "60"  ]

@@ -2,27 +2,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: anti-replay-demo
-  namespace: anti-replay-demo
+  name: watson-lua
+  namespace: daocloud-test
   annotations:
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: anti-replay-demo
+      app: watson-lua
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: anti-replay-demo
+        app: watson-lua
     spec:
       containers:
-        - name: anti-replay-demo-container
+        - name: watson-lua-container
           image: >-
-            release.daocloud.io/skoala/envoy-extproc-anti-replay-demo-go:b96525fb68a684922449c07e8b7088f31179aee6
+            release-ci.daocloud.io/skoala/watson-lua:v1
           ports:
             - containerPort: 50051
               protocol: TCP
+          args:
+            - watson-auth-sso
           resources: {}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
@@ -44,17 +46,16 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: anti-replay-demo
-  namespace: anti-replay-demo
+  name: watson-lua
+  namespace: daocloud-test
   annotations:
 spec:
   ports:
     - protocol: TCP
       port: 50051
       targetPort: 50051
-      nodePort: 31928
   selector:
-    app: anti-replay-demo
+    app: watson-lua
   type: NodePort
   sessionAffinity: None
   externalTrafficPolicy: Cluster
