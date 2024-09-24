@@ -37,7 +37,7 @@ func (w *WatsonSSORequestProcessorV2) newRequestBody(rawHeaders map[string][]byt
 	return &RequestBody{
 		RequestURL:           string(rawHeaders[":path"]),
 		RequestMethod:        string(rawHeaders[":method"]),
-		ForgetMatchingLength: 3,
+		ForgetMatchingLength: w.ForgetMatchingLength,
 	}
 }
 
