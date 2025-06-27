@@ -6,9 +6,13 @@ import (
 
 const (
 	DefaultSsoPath    = "/admin/user/sso"
-	DefaultHost       = "rbac-asw-authorization-blue.rbac-aswatson-prd:8080"
+	DefaultHost       = "http://rbac-asw-authorization-blue.rbac-aswatson-prd:8080"
 	DefaultHostPrefix = "http://"
+	HttpsHostPrefix   = "https://"
 	DefaultPort       = "80"
+	HttpsPort         = "443"
+	DefaultScheme     = "http"
+	HttpsScheme       = "https"
 )
 
 const (
@@ -25,7 +29,7 @@ const (
 	KNoCheckRegexp        = "noCheckRegexp"
 )
 
-var ProtocolIPPortRegexp = regexp.MustCompile(`^(?P<protocol>(https|http)?://)?(?P<host>([a-zA-Z0-9_-]+)*(\.[a-zA-Z0-9_-]+)*)(:(?P<port>\d+))?((?P<path>/[^\s]*)*)?$`)
+var ProtocolIPPortRegexp = regexp.MustCompile(`^(?:(?P<protocol>https?)://)?(?P<host>[a-zA-Z0-9._-]+)(?::(?P<port>\d+))?(?P<path>/\S*)?$`)
 
 var http2To1Header = map[string]string{
 	":authority": "host",

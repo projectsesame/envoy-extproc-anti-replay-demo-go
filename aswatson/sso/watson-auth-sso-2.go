@@ -6,11 +6,12 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/projectsesame/envoy-extproc-anti-replay-demo-go/aswatson"
 	"log"
 	"net/http"
 	"regexp"
 	"time"
+
+	"github.com/projectsesame/envoy-extproc-anti-replay-demo-go/aswatson"
 
 	ep "github.com/wrossmorrow/envoy-extproc-sdk-go"
 )
@@ -130,7 +131,7 @@ func (w *WatsonSSORequestProcessorV2) Init(args []string, rootCmd *flag.FlagSet,
 	rootCmd.Parse(args)
 
 	w.SsoURL = w.ssoURL()
-	w.HTTPClient = &http.Client{Timeout: w.Timeout}
+	w.HTTPClient = aswatson.HttpClient(w.Timeout, w.SsoURL)
 
 	NoCheckRegexp = regexp.MustCompile(w.NoCheckReg)
 

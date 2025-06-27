@@ -1,31 +1,70 @@
 package aswatson
 
 import (
+	"crypto/tls"
 	"fmt"
-	typev3 "github.com/envoyproxy/go-control-plane/envoy/type/v3"
-	ep "github.com/wrossmorrow/envoy-extproc-sdk-go"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
+	"time"
+
+	typev3 "github.com/envoyproxy/go-control-plane/envoy/type/v3"
+	ep "github.com/wrossmorrow/envoy-extproc-sdk-go"
 )
 
 func NewHost(host string) string {
-	if strings.HasPrefix(host, DefaultHostPrefix) {
+	if strings.HasPrefix(host, DefaultHostPrefix) || strings.HasPrefix(host, HttpsHostPrefix) {
 		return host
 	}
 
 	match := ProtocolIPPortRegexp.FindStringSubmatch(host)
 	if match != nil {
-		regHost := match[ProtocolIPPortRegexp.SubexpIndex("host")]
-		regPort := match[ProtocolIPPortRegexp.SubexpIndex("port")]
-		if regPort == "" {
-			regPort = DefaultPort
+		group := func(name string) string {
+			idx := ProtocolIPPortRegexp.SubexpIndex(name)
+			if idx >= 0 && idx < len(match) {
+				return match[idx]
+			}
+			return ""
 		}
-		return fmt.Sprintf("%s%s:%s", DefaultHostPrefix, regHost, regPort)
-
+		regHost := group("host")
+		regPort := group("port")
+		regProtocol := group("protocol")
+		if regPort == "" && regProtocol == "" {
+			regProtocol = DefaultScheme
+			regPort = DefaultPort
+		} else if regPort == "" {
+			switch regProtocol {
+			case HttpsScheme:
+				regPort = HttpsPort
+			default:
+				regPort = DefaultPort
+			}
+		} else if regProtocol == "" {
+			switch regPort {
+			case HttpsPort:
+				regProtocol = HttpsScheme
+			default:
+				regProtocol = DefaultScheme
+			}
+		}
+		return fmt.Sprintf("%s://%s:%s", regProtocol, regHost, regPort)
 	}
 	return DefaultHost
+}
+
+func HttpClient(timeout time.Duration, reqUrl string) *http.Client {
+	u, _ := url.Parse(reqUrl)
+	if u.Scheme == HttpsScheme {
+		return &http.Client{
+			Timeout:   timeout,
+			Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}},
+		}
+	}
+	return &http.Client{
+		Timeout: timeout,
+	}
 }
 
 func NewPath(path string) string {

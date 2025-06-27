@@ -6,10 +6,11 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/projectsesame/envoy-extproc-anti-replay-demo-go/aswatson"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/projectsesame/envoy-extproc-anti-replay-demo-go/aswatson"
 
 	ep "github.com/wrossmorrow/envoy-extproc-sdk-go"
 )
@@ -139,7 +140,7 @@ func (w *WatsonTokenRequestProcessor) Init(args []string, rootCmd *flag.FlagSet,
 	rootCmd.Parse(args)
 
 	w.TokenURL = w.tokenURL()
-	w.HTTPClient = &http.Client{Timeout: w.Timeout}
+	w.HTTPClient = aswatson.HttpClient(w.Timeout, w.TokenURL)
 
 	log.Printf("tokenURL: %s", w.TokenURL)
 	log.Printf("timeout: %s", w.Timeout)
